@@ -141,18 +141,24 @@ function statusFor(iso) {
 }
 
 async function loadDevices() {
-  const listResp = await fetch(
-    `https://api.github.com/repos/${OWNER}/${REPO}/contents/devices`,
-    { headers: { Accept: "application/vnd.github+json" } }
+  // Deliberately never hits api.github.com here — that's capped at 60 unauthenticated
+  // requests/hour per IP and gets exhausted fast by normal dashboard viewing (it also
+  // fails as a confusing CORS error rather than a clear 403, since GitHub omits CORS
+  // headers on throttled responses). raw.githubusercontent.com is a CDN, not subject to
+  // that limit. Each device maintains devices/index.json so it never needs listing.
+  const indexResp = await fetch(
+    `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/devices/index.json?t=${Date.now()}`
   );
-  if (!listResp.ok) throw new Error("Could not list devices/ (" + listResp.status + ")");
-  const entries = await listResp.json();
+  if (!indexResp.ok) {
+    if (indexResp.status === 404) return []; // no devices have ever reported yet
+    throw new Error("Could not load device index (" + indexResp.status + ")");
+  }
+  const deviceIds = await indexResp.json();
 
-  const jsonFiles = entries.filter(e => e.type === "file" && e.name.endsWith(".json"));
   const devices = await Promise.all(
-    jsonFiles.map(async (entry) => {
+    deviceIds.map(async (id) => {
       const raw = await fetch(
-        `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/devices/${entry.name}?t=${Date.now()}`
+        `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/devices/${id}.json?t=${Date.now()}`
       );
       if (!raw.ok) return null;
       try {
