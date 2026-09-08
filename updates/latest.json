@@ -1,6 +1,6 @@
 {
-  "versionCode": 6,
-  "versionName": "1.5",
+  "versionCode": 7,
+  "versionName": "1.6",
   "apkUrl": "https://raw.githubusercontent.com/lasanthr/rsic-kiosk-fleet-status/main/updates/app-release.apk",
-  "sha256": "bba12b330321f039366dde60be9191d4cff83742b7ba5750518883053f8fd55c"
+  "sha256": "22035ea823004902b7e36e756be7fc0d8d8c290e98052bf78d72fdc65807370d"
 }
