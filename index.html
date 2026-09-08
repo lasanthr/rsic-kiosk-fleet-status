@@ -196,7 +196,7 @@ function render(devices) {
     const battery = (d.batteryPercent ?? d.batteryPercent === 0) ? d.batteryPercent + "%" : "—";
     return `<tr>
       <td><span class="dot ${status}"></span>${status}</td>
-      <td>${escapeHtml(d.deviceId ?? "—")}</td>
+      <td title="${escapeHtml(d.deviceId ?? "")}">${escapeHtml(d.deviceName || d.model || "—")}</td>
       <td>${escapeHtml(d.model ?? "—")}</td>
       <td title="${escapeHtml(d.lastSeenUtc ?? "")}">${relativeTime(d.lastSeenUtc)}</td>
       <td>${escapeHtml(d.wifiSsid ?? "—")}</td>
